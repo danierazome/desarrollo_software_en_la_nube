@@ -1,0 +1,95 @@
+version: "3.8"
+services:
+  postgres_db:
+    image: postgres:latest
+    container_name: postgres-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=arquitectura
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d
+    depends_on:
+      - rabbitmq_cloud
+
+  rabbitmq_cloud:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_cloud
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  signup:
+    image: signup/cloud
+    build: ./signup
+    container_name: signup-cloud
+    environment:
+      - DB_HOST=postgres_db
+    depends_on:
+      - postgres_db
+
+  login:
+    image: login/cloud
+    build: ./login
+    container_name: login-cloud
+    environment:
+      - DB_HOST=postgres_db
+      - AUTH_HOST=authorization-server
+    depends_on:
+      - postgres_db
+
+  init-conversion:
+    image: init-conversion/cloud
+    container_name: init-conversion
+    build: ./init-conversion
+    environment:
+      - DB_HOST=postgres_db
+      - BROKER_HOST=rabbitmq_cloud
+    depends_on:
+      - postgres_db
+      - rabbitmq_cloud
+
+  convert-video:
+    image: convert-video/cloud
+    container_name: convert-video
+    build: ./convert-video
+    environment:
+      - DB_HOST=postgres_db
+      - BROKER_HOST=rabbitmq_cloud
+    depends_on:
+      - postgres_db
+      - rabbitmq_cloud
+
+  manage-conversion:
+    image: manage-conversion/cloud
+    build: ./manage-conversion
+    container_name: manage-conversion
+    environment:
+      - DB_HOST=postgres_db
+    depends_on:
+      - postgres_db
+
+  authorization-server:
+    image: authorization-server/cloud
+    build: ./authorization-server
+    container_name: authorization-server
+
+  gateway:
+    image: gateway/cloud
+    build: ./gateway
+    container_name: gateway-cloud
+    environment:
+      - AUTH_HOST=authorization-server
+      - SIGNUP_HOST=signup
+      - LOGIN_HOST=login
+      - INIT_CONVERSION_HOST=init-conversion
+      - MANAGE_CONVERSION_HOST=manage-conversion
+
+volumes:
+  pg-data:
