@@ -79,6 +79,15 @@ services:
     image: authorization-server/cloud
     build: ./authorization-server
     container_name: authorization-server
+  
+  list-tasks:
+    image: list-tasks/cloud
+    build: ./list-tasks
+    container_name: list-tasks
+    environment:
+      - DB_HOST=postgres_db
+    depends_on:
+      - postgres_db
 
   gateway:
     image: gateway/cloud
@@ -92,6 +101,7 @@ services:
       - LOGIN_HOST=login
       - INIT_CONVERSION_HOST=init-conversion
       - MANAGE_CONVERSION_HOST=manage-conversion
+      - LIST_TASKS_HOST=list-tasks
 
 volumes:
   pg-data:
