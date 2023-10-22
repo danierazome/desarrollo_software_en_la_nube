@@ -84,6 +84,8 @@ services:
     image: gateway/cloud
     build: ./gateway
     container_name: gateway-cloud
+    ports:
+    - "5000:5000"
     environment:
       - AUTH_HOST=authorization-server
       - SIGNUP_HOST=signup
