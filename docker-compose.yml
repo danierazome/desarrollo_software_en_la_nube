@@ -88,6 +88,15 @@ services:
       - DB_HOST=postgres_db
     depends_on:
       - postgres_db
+  
+  delete-task:
+    image: delete-task/cloud
+    build: ./delete-task
+    container_name: delete-task
+    environment:
+      - DB_HOST=postgres_db
+    depends_on:
+      - postgres_db
 
   gateway:
     image: gateway/cloud
@@ -102,6 +111,7 @@ services:
       - INIT_CONVERSION_HOST=init-conversion
       - MANAGE_CONVERSION_HOST=manage-conversion
       - LIST_TASKS_HOST=list-tasks
+      - DELETE_TASK_HOST=delete-task
 
 volumes:
   pg-data:
