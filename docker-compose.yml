@@ -67,15 +67,11 @@ services:
     build: ./gateway
     container_name: gateway-cloud
     ports:
-    - "5000:5000"
+      - "5000:5000"
     environment:
       - AUTH_HOST=authorization-server
-      - SIGNUP_HOST=sign
-      - LOGIN_HOST=sign
-      - INIT_CONVERSION_HOST=manage-conversion
+      - SIGN_HOST=sign
       - MANAGE_CONVERSION_HOST=manage-conversion
-      - LIST_TASKS_HOST=manage-conversion
-      - DELETE_TASK_HOST=manage-conversion
 
 volumes:
   pg-data:
