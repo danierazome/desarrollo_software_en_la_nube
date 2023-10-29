@@ -25,29 +25,20 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-  signup:
-    image: signup/cloud
-    build: ./signup
-    container_name: signup-cloud
-    environment:
-      - DB_HOST=postgres_db
-    depends_on:
-      - postgres_db
-
-  login:
-    image: login/cloud
-    build: ./login
-    container_name: login-cloud
+  sign:
+    image: sign/cloud
+    build: ./sign
+    container_name: sign-cloud
     environment:
       - DB_HOST=postgres_db
       - AUTH_HOST=authorization-server
     depends_on:
       - postgres_db
 
-  init-conversion:
-    image: init-conversion/cloud
-    container_name: init-conversion
-    build: ./init-conversion
+  manage-conversion:
+    image: manage-conversion/cloud
+    container_name: manage-conversion
+    build: ./manage-conversion
     environment:
       - DB_HOST=postgres_db
       - BROKER_HOST=rabbitmq_cloud
@@ -66,52 +57,21 @@ services:
       - postgres_db
       - rabbitmq_cloud
 
-  manage-conversion:
-    image: manage-conversion/cloud
-    build: ./manage-conversion
-    container_name: manage-conversion
-    environment:
-      - DB_HOST=postgres_db
-    depends_on:
-      - postgres_db
-
   authorization-server:
     image: authorization-server/cloud
     build: ./authorization-server
     container_name: authorization-server
-  
-  list-tasks:
-    image: list-tasks/cloud
-    build: ./list-tasks
-    container_name: list-tasks
-    environment:
-      - DB_HOST=postgres_db
-    depends_on:
-      - postgres_db
-  
-  delete-task:
-    image: delete-task/cloud
-    build: ./delete-task
-    container_name: delete-task
-    environment:
-      - DB_HOST=postgres_db
-    depends_on:
-      - postgres_db
 
   gateway:
     image: gateway/cloud
     build: ./gateway
     container_name: gateway-cloud
     ports:
-    - "5000:5000"
+      - "5000:5000"
     environment:
       - AUTH_HOST=authorization-server
-      - SIGNUP_HOST=signup
-      - LOGIN_HOST=login
-      - INIT_CONVERSION_HOST=init-conversion
+      - SIGN_HOST=sign
       - MANAGE_CONVERSION_HOST=manage-conversion
-      - LIST_TASKS_HOST=list-tasks
-      - DELETE_TASK_HOST=delete-task
 
 volumes:
   pg-data:

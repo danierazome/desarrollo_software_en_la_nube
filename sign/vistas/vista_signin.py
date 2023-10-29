@@ -10,7 +10,7 @@ AUTH_HOST = os.getenv('AUTH_HOST')
 
 class VistaLogin(Resource):
     def post(self):
-
+        print(f'AUTH_HOST ADDRESS {AUTH_HOST}')
         usuario = Usuario.query.filter(
             Usuario.usuario == request.json['usuario']).first()
 

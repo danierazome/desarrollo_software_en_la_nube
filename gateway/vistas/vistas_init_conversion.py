@@ -6,7 +6,7 @@ import requests
 import os
 
 AUTH_HOST = os.getenv('AUTH_HOST')
-INIT_CONVERSION_HOST = os.getenv('INIT_CONVERSION_HOST')
+MANAGE_CONVERSION_HOST = os.getenv('MANAGE_CONVERSION_HOST')
 
 
 class VistaInitVideoConversion(Resource):
@@ -22,7 +22,7 @@ class VistaInitVideoConversion(Resource):
         usuario_id = str(validar_token.json()['usuario_id'])
 
         response_service = requests.post(
-            url=f'http://{INIT_CONVERSION_HOST}:5000/api/upload-video/' + usuario_id,
+            url=f'http://{MANAGE_CONVERSION_HOST}:5000/api/upload-video/' + usuario_id,
             data=request.form,
             files={'file': (file.filename, file)})
 
