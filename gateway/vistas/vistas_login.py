@@ -10,7 +10,7 @@ LOGIN_HOST = os.getenv('LOGIN_HOST')
 
 class VistaLogin(Resource):
     def post(self):
-
+        print(LOGIN_HOST)
         response_login = requests.post(
             url=f'http://{LOGIN_HOST}:5000/api/login',
             json=request.json)
