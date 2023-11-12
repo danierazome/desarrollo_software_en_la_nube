@@ -1,18 +1,15 @@
 from flask import request
 from flask_restful import Resource
 
+from constant import INTERNAL_LOAD_BALANCER, VALIDATE_TOKEN_ENDPOINT, UPLOAD_VIDEO_ENDPOINT
+
 import requests
-
-import os
-
-AUTH_HOST = os.getenv('AUTH_HOST')
-MANAGE_CONVERSION_HOST = os.getenv('MANAGE_CONVERSION_HOST')
 
 
 class VistaInitVideoConversion(Resource):
     def post(self):
         validar_token = requests.post(
-            url=f'http://{AUTH_HOST}:5000/api/validar-token',
+            url=f'{INTERNAL_LOAD_BALANCER}{VALIDATE_TOKEN_ENDPOINT}',
             headers={"Authorization": request.headers['Authorization']})
 
         if validar_token.status_code != 200:
@@ -22,7 +19,7 @@ class VistaInitVideoConversion(Resource):
         usuario_id = str(validar_token.json()['usuario_id'])
 
         response_service = requests.post(
-            url=f'http://{MANAGE_CONVERSION_HOST}:5000/api/upload-video/' + usuario_id,
+            url=f'{INTERNAL_LOAD_BALANCER}{UPLOAD_VIDEO_ENDPOINT}/' + usuario_id,
             data=request.form,
             files={'file': (file.filename, file)})
 

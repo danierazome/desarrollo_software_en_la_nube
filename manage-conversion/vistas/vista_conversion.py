@@ -1,8 +1,8 @@
-from flask import request, send_file
+from flask import request
 from flask_restful import Resource
 from modelos import db, VideoConversion
+from .gcp_storage import delete_video
 
-from io import BytesIO
 
 
 class VistaVideoConversion(Resource):
@@ -17,16 +17,15 @@ class VistaVideoConversion(Resource):
         if conversion.state != "DONE":
             return {"mensaje": "Conversion se encuentra en proceso"}
 
-        if conversion.original_format == request.json['format']:
-            video_name = "".join(
-                [conversion.video_name, ".", conversion.original_format])
-            return send_file(BytesIO(conversion.video),
-                             download_name=video_name, as_attachment=True)
-        else:
-            video_name = "".join(
-                [conversion.video_name, ".", conversion.conversion_format])
-            return send_file(BytesIO(conversion.video_converted),
-                             download_name=video_name, as_attachment=True)
+        return {
+                    'id': conversion.id,
+                    'video': conversion.video,
+                    'video_name': conversion.video_name,
+                    'original_format': conversion.original_format,
+                    'video_converted': conversion.video_converted,
+                    'conversion_format': conversion.conversion_format,
+                    'state': conversion.state
+                }
 
 
 class VistaVideoConversions(Resource):
@@ -41,25 +40,51 @@ class VistaVideoConversions(Resource):
             for conversion in conversions:
                 conversion_list.append({
                     'id': conversion.id,
+                    'video': conversion.video,
                     'video_name': conversion.video_name,
                     'original_format': conversion.original_format,
+                    'video_converted': conversion.video_converted,
                     'conversion_format': conversion.conversion_format,
                     'state': conversion.state
                 })
-            return {'conversions': conversion_list, }, 200
+            return {'conversions': conversion_list, }
         else:
-            return {'conversions': 'El usuario no tiene tareas de converión aún.'}, 200
+            return {'conversions': 'El usuario no tiene tareas de converión aún.'}
 
 
 class VistaDeleteVideoConversion(Resource):
 
     def delete(self):
         id = request.json['id']
-        conversion = VideoConversion.query.get(id)
+        usuario_id = request.json['usuario_id']
+        
+        conversion = VideoConversion.query.filter_by(
+            id=id, usuario_id=usuario_id).first()
 
-        if conversion is not None:
-            db.session.delete(conversion)
-            db.session.commit()
-            return {'mensaje': 'La conversión se ha eliminado exitosamente'}
-        else:
+        if conversion is None:
             return {'mensaje': 'No se encontró la conversión'}, 404
+        
+        if conversion.state != "DONE":
+            return {"mensaje": "Conversion en proceso no puede ser borrada"}
+
+        # DELETE ORIGINAL VIDEO FILE
+
+        video_name = self.get_video_name(
+            id=conversion.id, name=conversion.video_name, format=conversion.original_format)
+        delete_video(video_name=video_name)
+
+        # DELETE CONVERTED VIDEO FILE
+        converted_video_name = self.get_video_name(
+            id=conversion.id, name=conversion.video_name, format=conversion.conversion_format)
+        delete_video(video_name=converted_video_name)
+
+        # DELETE ENTITY FROM DATABASE
+        db.session.delete(conversion)
+        db.session.commit()
+
+        return {'mensaje': 'La conversión se ha eliminado exitosamente'}
+       
+    
+    def get_video_name(self, id, name, format):
+        return f'{id}{name}.{format}'
+

@@ -4,6 +4,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 
 
 class VistaGenerar(Resource):
+
     def post(self):
 
         token_claims = {"id": request.json['user_id']}
