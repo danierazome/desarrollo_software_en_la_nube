@@ -1,24 +1,24 @@
 from flask import request
 from flask_restful import Resource
-import requests
-import os
+from constant import INTERNAL_LOAD_BALANCER, VALIDATE_TOKEN_ENDPOINT, CONVERSIONS_ENDPOINT
 
-AUTH_HOST = os.getenv('AUTH_HOST')
-MANAGE_CONVERSION_HOST = os.getenv('MANAGE_CONVERSION_HOST')
+import requests
 
 
 class VistaListTasks(Resource):
     def get(self):
         user_data = {}
         validar_token = requests.post(
-            url=f'http://{AUTH_HOST}:5000/api/validar-token',
+            url=f'{INTERNAL_LOAD_BALANCER}{VALIDATE_TOKEN_ENDPOINT}',
             headers={"Authorization": request.headers['Authorization']})
 
         if validar_token.status_code != 200:
             return validar_token.json(), validar_token.status_code
+
         user_data['usuario_id'] = validar_token.json()['usuario_id']
+
         response_service = requests.get(
-            url=f'http://{MANAGE_CONVERSION_HOST}:5000/api/tareas-conversion',
+            url=f'{INTERNAL_LOAD_BALANCER}{CONVERSIONS_ENDPOINT}',
             json=user_data)
 
         return response_service.json(), response_service.status_code

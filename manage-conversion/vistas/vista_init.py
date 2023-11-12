@@ -1,13 +1,14 @@
 from flask import request
 from flask_restful import Resource
+
 from modelos import db, VideoConversion
+from constant import BROKER_HOST
+from .gcp_storage import save_video
 
 import datetime
 import pika
 import uuid
-import os
 
-BROKER_HOST = os.getenv('BROKER_HOST')
 
 allowed_formats = ['mp4', 'webm', 'avi']
 
@@ -34,13 +35,16 @@ class VistaInitVideoConversion(Resource):
         if conversion_format == video_metadata[1]:
             return {'mensaje': 'Formatos iguales'}, 400
 
-        # PERSIST ENTITY ON DATABASE
+        # UPLOAD VIDEO FILE AND ENTITY ON DATABASE
         conversion_id = str(uuid.uuid4())
         date_now = datetime.datetime.now()
 
+        # #  UPLOAD VIDEOFILE
+        video_url = save_video(video=file, uuid=conversion_id)
+
         conversion = VideoConversion(
             id=conversion_id,
-            video=file.read(),
+            video=video_url,
             video_name=video_metadata[0],
             original_format=video_metadata[1],
             upload_date=date_now,

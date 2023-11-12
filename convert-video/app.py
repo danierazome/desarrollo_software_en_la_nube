@@ -4,20 +4,16 @@ from flask_coney import Coney
 
 from convert_video import Video
 
+from constant import DB_URL_CONNECTION, BROKER_URL_CONNECTION
+
 from modelos import db
-
-import os
-
-DB_HOST = os.getenv('DB_HOST')
-BROKER_HOST = os.getenv('BROKER_HOST')
-
 
 # ----------> FLASK APP
 app = Flask(__name__)
 
 
-app.config["CONEY_BROKER_URI"] = f'amqp://guest:guest@{BROKER_HOST}:5672'
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://user:password@{DB_HOST}:5432/arquitectura'
+app.config["CONEY_BROKER_URI"] = BROKER_URL_CONNECTION
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL_CONNECTION
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
