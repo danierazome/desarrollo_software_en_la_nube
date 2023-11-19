@@ -4,7 +4,6 @@ from gcp_storage import save_converted_video, get_video_as_bytes
 
 import datetime
 import os
-import logging
 
 
 class Video:

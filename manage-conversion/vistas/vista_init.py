@@ -2,11 +2,10 @@ from flask import request
 from flask_restful import Resource
 
 from modelos import db, VideoConversion
-from constant import BROKER_HOST
 from .gcp_storage import save_video
+from .pub_message import publish_message
 
 import datetime
-import pika
 import uuid
 
 
@@ -55,16 +54,7 @@ class VistaInitVideoConversion(Resource):
         db.session.add(conversion)
         db.session.commit()
 
-        # SEND EVENT TO MESSAGE BROKER
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=BROKER_HOST))
-        channel = connection.channel()
-
-        channel.queue_declare(queue='convert-video')
-
-        channel.basic_publish(exchange='',
-                              routing_key='convert-video',
-                              body=conversion_id)
-        connection.close()
+        # SEND TO MESSAGE SYSTEM
+        publish_message(conversion_id)
 
         return {"result": "Video se ha cargado exitosamente y esta en proceso"}

@@ -13,3 +13,4 @@ eventlet
 pika
 google-cloud-storage
 py-healthcheck
+google-cloud-pubsub

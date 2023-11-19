@@ -13,4 +13,6 @@ eventlet
 pika
 Flask-Executor
 flask_coney
+py-healthcheck
 google-cloud-storage
+google-cloud-pubsub

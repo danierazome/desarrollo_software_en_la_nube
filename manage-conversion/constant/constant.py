@@ -1,5 +1,9 @@
 import os
 
-BROKER_HOST = os.getenv('BROKER_HOST')
+
 BUCKET_NAME = os.getenv('BUCKET_NAME')
+
 DB_URL_CONNECTION = os.getenv('DB_URL_CONNECTION')
+
+CONVER_VIDEO_TOPIC = os.getenv('CONVER_VIDEO_TOPIC')
+PROJECT_ID = os.getenv('PROJECT_ID')
