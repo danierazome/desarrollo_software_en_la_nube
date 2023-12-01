@@ -21,7 +21,7 @@ class VistaConvertVideo(Resource):
         data = data_bytes.decode('ascii')
         logging.warning(data)
 
-        # self.convert_video(conversion_id=data)
+        self.convert_video(conversion_id=data)
 
         return
 
