@@ -16,7 +16,7 @@ class VistaManageConversion(Resource):
 
         request.json['usuario_id'] = validar_token.json()['usuario_id']
 
-        response_service = requests.get(
+        response_service = requests.post(
             url=f'{MANAGE_CONVERSION_ENDPOINT}{CONVERSION_ENDPOINT}',
             json=request.json)
 

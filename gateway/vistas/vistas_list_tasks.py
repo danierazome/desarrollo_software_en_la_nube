@@ -6,7 +6,7 @@ import requests
 
 
 class VistaListTasks(Resource):
-    def get(self):
+    def post(self):
         user_data = {}
         validar_token = requests.post(
             url=f'{AUTH_SERVER_ENDPOINT}{VALIDATE_TOKEN_ENDPOINT}',
@@ -17,7 +17,7 @@ class VistaListTasks(Resource):
 
         user_data['usuario_id'] = validar_token.json()['usuario_id']
 
-        response_service = requests.get(
+        response_service = requests.post(
             url=f'{MANAGE_CONVERSION_ENDPOINT}{CONVERSIONS_ENDPOINT}',
             json=user_data)
 

@@ -16,7 +16,7 @@ class VistaDeleteTask(Resource):
 
         request.json['usuario_id'] = validar_token.json()['usuario_id']
 
-        response_service = requests.delete(
+        response_service = requests.post(
             url=f'{MANAGE_CONVERSION_ENDPOINT}{DELETE_CONVERSION_ENDPOINT}',
             json=request.json)
 
