@@ -1,6 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import logging
 
 
 def send_email(usuario, conversion):
@@ -29,6 +30,5 @@ def send_email(usuario, conversion):
         # Enviar el correo electrónico
         servidor_smtp.sendmail(rem_email, rec_email, msg.as_string())
         servidor_smtp.quit()
-        print("Correo electrónico enviado correctamente")
     except Exception as e:
-        print(f"Error al enviar el correo electrónico: {str(e)}")
+        logging.warning(f"Error al enviar el correo electrónico: {str(e)}")

@@ -2,8 +2,6 @@ import os
 
 DB_URL_CONNECTION = os.getenv('DB_URL_CONNECTION')
 
-BUCKET_NAME = os.getenv('BUCKET_NAME')
+CONVERT_VIDEO_ENDPOINT = '/api/convert-video'
 
-CONVER_VIDEO_SUBSC = os.getenv('CONVER_VIDEO_SUBSC')
-CONVER_VIDEO_TOPIC = os.getenv('CONVER_VIDEO_TOPIC')
-PROJECT_ID = os.getenv('PROJECT_ID')
+BUCKET_NAME = os.getenv('BUCKET_NAME')
